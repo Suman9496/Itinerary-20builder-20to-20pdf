@@ -122,6 +122,27 @@
       sans-serif;
   }
 
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+
+  input,
+  select,
+  textarea {
+    min-width: 0;
+  }
+
   .font-display {
     font-family:
       "Poppins",

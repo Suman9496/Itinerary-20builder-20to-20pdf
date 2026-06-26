@@ -26,6 +26,10 @@ import { generatePdfFromElement } from "@/utils/pdf";
 
 const money = (n: number) => `₹ ${Math.round(n).toLocaleString()}`;
 
+const PDF_PAGE_WIDTH = 794;
+const PDF_PAGE_HEIGHT = 1123;
+const PDF_PAGE_COUNT = 5;
+
 export default function Index() {
   const [data, setData] = useState<ItineraryData>(() => {
     const d = makeEmptyData();
@@ -64,6 +68,8 @@ export default function Index() {
   );
 
   const pdfRootRef = useRef<HTMLDivElement | null>(null);
+  const previewContainerRef = useRef<HTMLDivElement | null>(null);
+  const [previewScale, setPreviewScale] = useState(0.5);
 
   useEffect(() => {
     if (data.departureDate && data.duration) {
@@ -78,6 +84,30 @@ export default function Index() {
       }));
     }
   }, [data.departureDate, data.duration]);
+
+  useEffect(() => {
+    const container = previewContainerRef.current;
+    if (!container) return;
+
+    const updatePreviewScale = () => {
+      const availableWidth = Math.max(0, container.clientWidth - 32);
+      const nextScale = Math.min(
+        0.72,
+        Math.max(0.28, availableWidth / PDF_PAGE_WIDTH),
+      );
+      setPreviewScale(nextScale);
+    };
+
+    updatePreviewScale();
+    const resizeObserver = new ResizeObserver(updatePreviewScale);
+    resizeObserver.observe(container);
+    window.addEventListener("resize", updatePreviewScale);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updatePreviewScale);
+    };
+  }, []);
 
   const regenerate = () => setData((prev) => regenerateSuggestions(prev));
 
@@ -501,13 +531,14 @@ export default function Index() {
           </div>
 
           {/* Day Builder */}
-          <div className="rounded-2xl border shadow-sm bg-white p-5">
-            <div className="flex items-center justify-between">
+          <div className="rounded-2xl border bg-white p-4 shadow-sm sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
               <h2 className="font-display text-lg font-bold text-brand-900">
                 Day Builder
               </h2>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
                 <Button
+                  className="w-full sm:w-auto"
                   variant="outline"
                   onClick={() =>
                     setData((p) => ({
@@ -523,7 +554,7 @@ export default function Index() {
                 >
                   Apply Template
                 </Button>
-                <Button variant="secondary" onClick={addDay}>
+                <Button className="w-full sm:w-auto" variant="secondary" onClick={addDay}>
                   + Add Day
                 </Button>
               </div>
@@ -531,9 +562,9 @@ export default function Index() {
 
             <div className="mt-4 space-y-4">
               {data.days.map((day, idx) => (
-                <div key={idx} className="rounded-xl border p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
+                <div key={idx} className="min-w-0 rounded-xl border p-3 sm:p-4">
+                  <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
                       <div className="text-brand-900 font-semibold">
                         {day.label}
                       </div>
@@ -541,9 +572,9 @@ export default function Index() {
                         {day.date || "Set start date for auto"}
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="grid min-w-0 grid-cols-1 gap-2 sm:flex sm:min-w-[260px]">
                       <input
-                        className="rounded-lg border px-2 py-1 text-sm"
+                        className="min-w-0 w-full rounded-lg border px-2 py-2 text-sm sm:py-1"
                         value={day.label}
                         onChange={(e) =>
                           setData((p) => ({
@@ -555,6 +586,7 @@ export default function Index() {
                         }
                       />
                       <Button
+                        className="w-full shrink-0 sm:w-auto"
                         variant="destructive"
                         onClick={() => removeDay(idx)}
                       >
@@ -563,15 +595,15 @@ export default function Index() {
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-3 gap-3 mt-3">
+                  <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 md:grid-cols-3">
                     {(["morning", "afternoon", "evening"] as const).map(
                       (slot) => (
-                        <div key={slot}>
+                        <div key={slot} className="min-w-0">
                           <label className="block text-slate-600 mb-1 capitalize">
                             {slot}
                           </label>
                           <select
-                            className="w-full rounded-lg border px-3 py-2"
+                            className="min-w-0 w-full rounded-lg border px-3 py-2"
                             value={day.activities[slot] || ""}
                             onChange={(e) =>
                               setData((p) => ({
@@ -602,13 +634,13 @@ export default function Index() {
                     )}
                   </div>
 
-                  <div className="grid md:grid-cols-3 gap-3 mt-3">
-                    <div>
+                  <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="min-w-0">
                       <label className="block text-slate-600 mb-1">
                         Transport
                       </label>
                       <select
-                        className="w-full rounded-lg border px-3 py-2"
+                        className="min-w-0 w-full rounded-lg border px-3 py-2"
                         value={day.transport || ""}
                         onChange={(e) =>
                           setData((p) => ({
@@ -628,10 +660,10 @@ export default function Index() {
                         ))}
                       </select>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <label className="block text-slate-600 mb-1">Hotel</label>
                       <select
-                        className="w-full rounded-lg border px-3 py-2"
+                        className="min-w-0 w-full rounded-lg border px-3 py-2"
                         value={day.hotelId || ""}
                         onChange={(e) =>
                           setData((p) => ({
@@ -649,12 +681,12 @@ export default function Index() {
                         ))}
                       </select>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <label className="block text-slate-600 mb-1">
                         Add custom activity (optional)
                       </label>
                       <input
-                        className="w-full rounded-lg border px-3 py-2"
+                        className="min-w-0 w-full rounded-lg border px-3 py-2"
                         value={day.customActivity || ""}
                         onChange={(e) =>
                           setData((p) => ({
@@ -824,7 +856,7 @@ export default function Index() {
 
           {/* Flights & Transfers */}
           <div className="rounded-2xl border shadow-sm bg-white p-5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-display text-lg font-bold text-brand-900">
                 Flights & Transfers
               </h2>
@@ -845,7 +877,7 @@ export default function Index() {
                   onClick={() => setFlightModalOpen(false)}
                 />
                 <div className="relative bg-white rounded-lg p-6 max-w-xl w-full z-10">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <DialogHeader>
                       <DialogTitle>Add Flight</DialogTitle>
                     </DialogHeader>
@@ -857,7 +889,7 @@ export default function Index() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                     <div>
                       <label className="block text-slate-600 mb-1">Date</label>
                       <input
@@ -981,11 +1013,11 @@ export default function Index() {
 
           {/* Hotel Bookings */}
           <div className="rounded-2xl border shadow-sm bg-white p-5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="font-display text-lg font-bold text-brand-900">
                 Hotel Bookings
               </h2>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   onClick={() =>
@@ -1253,10 +1285,21 @@ export default function Index() {
             <div className="text-sm text-slate-600 mb-3">
               This is a simplified preview of the PDF layout.
             </div>
-            <div className="h-[calc(100vh-18rem)] min-h-[420px] overflow-y-auto overflow-x-hidden rounded-lg border bg-slate-100">
+            <div
+              ref={previewContainerRef}
+              className="h-[min(680px,calc(100vh-18rem))] min-h-[360px] w-full overflow-y-auto overflow-x-hidden rounded-lg border bg-slate-100"
+            >
               <div className="mx-auto w-fit py-4">
-                <div className="h-[2918px] w-[413px] sm:h-[3369px] sm:w-[476px] xl:h-[2918px] xl:w-[413px]">
-                  <div className="origin-top-left scale-[0.52] sm:scale-[0.60] xl:scale-[0.52]">
+                <div
+                  style={{
+                    width: PDF_PAGE_WIDTH * previewScale,
+                    height: PDF_PAGE_HEIGHT * PDF_PAGE_COUNT * previewScale,
+                  }}
+                >
+                  <div
+                    className="origin-top-left"
+                    style={{ transform: `scale(${previewScale})` }}
+                  >
                     <PdfLayout
                       data={data}
                       travelerName={travelerName}
