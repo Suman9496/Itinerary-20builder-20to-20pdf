@@ -1,0 +1,153 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 232 36% 14%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 232 36% 14%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 232 36% 14%;
+
+    --primary: 270 64% 32%; /* vigovia deep purple #512da8 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 258 100% 94%; /* light purple for tables */
+    --secondary-foreground: 270 64% 32%;
+
+    --muted: 258 20% 96%;
+    --muted-foreground: 232 20% 46%;
+
+    --accent: 258 100% 96%;
+    --accent-foreground: 262 83% 25%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 258 32% 90%;
+    --input: 258 32% 90%;
+    --ring: 262 83% 58%;
+
+    --radius: 0.875rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 258 100% 96%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 262 83% 58%;
+
+    /* brand scale for PDF and UI */
+    --brand-50: 270 100% 97%;
+    --brand-100: 270 100% 94%;
+    --brand-200: 268 88% 85%; /* light purple */
+    --brand-300: 268 80% 76%;
+    --brand-400: 268 76% 65%;
+    --brand-500: 268 72% 55%; /* #7c5cdb */
+    --brand-600: 268 68% 45%;
+    --brand-700: 268 64% 38%; /* gradient middle */
+    --brand-800: 268 64% 32%; /* #512da8 */
+    --brand-900: 270 64% 32%; /* vigovia deep purple */
+    --brand-gradient-start: 214 100% 49%; /* #5660ff */
+    --brand-gradient-end: 286 87% 60%; /* #9b52ff */
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Arial,
+      sans-serif;
+  }
+
+  .font-display {
+    font-family:
+      "Poppins",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Arial,
+      sans-serif;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Utilities */
+  .page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+}
